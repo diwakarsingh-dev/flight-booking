@@ -40,7 +40,7 @@ curl -X POST http://localhost:8080/flight/booking \
   -H "Content-Type: application/json" \
   -d '{
     "flightNumber": "FL001",
-    "passengerNames": ["John Doe", "Jane Doe"],
+    "passengerNames": ["Diwakar Singh", "Deepak Singh"],
     "passengerEmail": "john.doe@example.com"
   }'
 ```
@@ -51,7 +51,7 @@ curl -X POST http://localhost:8080/flight/booking \
 {
   "bookingId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "flightNumber": "FL001",
-  "passengerNames": ["John Doe", "Jane Doe"],
+  "passengerNames": ["Diwakar Singh", "Deepak Singh"],
   "numberOfSeats": 2,
   "bookingTime": "2026-06-15T10:30:00",
   "status": "Booking confirmed"

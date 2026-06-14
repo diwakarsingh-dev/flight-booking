@@ -25,8 +25,8 @@ public class FlightRepository {
                 .origin("New York")
                 .destination("London")
                 .departureTime(LocalDateTime.now().plusDays(1))
-                .totalSeats(200)
-                .availableSeats(200)
+                .totalSeats(20)
+                .availableSeats(20)
                 .build());
 
         save(Flight.builder()
