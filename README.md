@@ -23,6 +23,8 @@ mvn clean install
 mvn spring-boot:run
 ```
 
+Or direct run "src/main/java/com/flight/booking/FlightBookingApplication.java" under any IDE
+
 The application starts on `http://localhost:8080`.
 
 ---
