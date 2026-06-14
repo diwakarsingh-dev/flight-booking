@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -16,7 +17,7 @@ public class Booking {
 
     private UUID bookingId;
     private String flightNumber;
-    private String passengerName;
+    private List<String> passengerNames;
     private String passengerEmail;
     private int numberOfSeats;
     private LocalDateTime bookingTime;

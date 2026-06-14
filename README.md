@@ -29,20 +29,19 @@ The application starts on `http://localhost:8080`.
 
 ## API Documentation
 
-### POST /api/bookings
+### POST /flight/booking
 
-Book seats on a flight.
+Book seats on a flight. The number of seats is determined by the number of passenger names provided.
 
 **Request:**
 
 ```bash
-curl -X POST http://localhost:8080/api/bookings \
+curl -X POST http://localhost:8080/flight/booking \
   -H "Content-Type: application/json" \
   -d '{
     "flightNumber": "FL001",
-    "passengerName": "John Doe",
-    "passengerEmail": "john.doe@example.com",
-    "numberOfSeats": 2
+    "passengerNames": ["John Doe", "Jane Doe"],
+    "passengerEmail": "john.doe@example.com"
   }'
 ```
 
@@ -52,7 +51,7 @@ curl -X POST http://localhost:8080/api/bookings \
 {
   "bookingId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "flightNumber": "FL001",
-  "passengerName": "John Doe",
+  "passengerNames": ["John Doe", "Jane Doe"],
   "numberOfSeats": 2,
   "bookingTime": "2026-06-15T10:30:00",
   "status": "Booking confirmed"
@@ -71,7 +70,7 @@ Location: /api/bookings/a1b2c3d4-e5f6-7890-abcd-ef1234567890
 ```json
 {
   "error": "Validation Failed",
-  "message": "{passengerName=Passenger name is required, flightNumber=Flight number is required}",
+  "message": "{passengerNames=At least one passenger name is required, flightNumber=Flight number is required}",
   "timestamp": "2026-06-15T10:30:00"
 }
 ```
@@ -123,7 +122,7 @@ curl http://localhost:8080/actuator/prometheus
 1. Run Prometheus and configure it to scrape `http://host.docker.internal:8080/actuator/prometheus`.
 2. Add Prometheus as a data source in Grafana (`http://prometheus:9090`).
 3. Import a Spring Boot dashboard (e.g., Grafana Dashboard ID **19004**) or create custom panels for JVM metrics, HTTP request rates, and response times.
-4. Use PromQL queries like `http_server_requests_seconds_count{uri="/api/bookings"}` to monitor booking traffic.
+4. Use PromQL queries like `http_server_requests_seconds_count{uri="/flight/booking"}` to monitor booking traffic.
 
 ---
 

@@ -25,8 +25,8 @@ public class BookingService {
     private final BookingRepository bookingRepository;
 
     public BookingResponse bookFlight(BookingRequest request) {
-        log.info("Booking request received - flightNumber: {}, passengerName: {}",
-                request.flightNumber(), request.passengerName());
+        log.info("Booking request received - flightNumber: {}, passengers: {}",
+                request.flightNumber(), request.passengerNames());
 
         if (flightRepository.findByFlightNumber(request.flightNumber()).isEmpty()) {
             log.warn("Flight not found: {}", request.flightNumber());
@@ -52,7 +52,7 @@ public class BookingService {
         Booking booking = Booking.builder()
                 .bookingId(UUID.randomUUID())
                 .flightNumber(request.flightNumber())
-                .passengerName(request.passengerName())
+                .passengerNames(request.passengerNames())
                 .passengerEmail(request.passengerEmail())
                 .numberOfSeats(request.numberOfSeats())
                 .bookingTime(LocalDateTime.now())
@@ -66,7 +66,7 @@ public class BookingService {
         return new BookingResponse(
                 booking.getBookingId(),
                 booking.getFlightNumber(),
-                booking.getPassengerName(),
+                booking.getPassengerNames(),
                 booking.getNumberOfSeats(),
                 booking.getBookingTime(),
                 "Booking confirmed"

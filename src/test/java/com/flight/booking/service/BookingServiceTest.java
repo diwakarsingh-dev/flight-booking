@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -59,7 +60,7 @@ class BookingServiceTest {
 
     @Test
     void bookFlight_success_decrementsSeats() {
-        BookingRequest request = new BookingRequest("FL001", "John Doe", "john@example.com", 2);
+        BookingRequest request = new BookingRequest("FL001", List.of("John Doe", "Jane Doe"), "john@example.com");
 
         when(flightRepository.findByFlightNumber("FL001")).thenReturn(Optional.of(sampleFlight));
         when(flightRepository.getStore()).thenReturn(flightStore);
@@ -69,7 +70,7 @@ class BookingServiceTest {
 
         assertThat(response).isNotNull();
         assertThat(response.flightNumber()).isEqualTo("FL001");
-        assertThat(response.passengerName()).isEqualTo("John Doe");
+        assertThat(response.passengerNames()).containsExactly("John Doe", "Jane Doe");
         assertThat(response.numberOfSeats()).isEqualTo(2);
         assertThat(response.status()).isEqualTo("Booking confirmed");
         assertThat(sampleFlight.getAvailableSeats()).isEqualTo(198);
@@ -78,7 +79,7 @@ class BookingServiceTest {
     @Test
     void bookFlight_insufficientSeats_throwsException() {
         sampleFlight.setAvailableSeats(1);
-        BookingRequest request = new BookingRequest("FL001", "John Doe", "john@example.com", 5);
+        BookingRequest request = new BookingRequest("FL001", List.of("P1", "P2", "P3", "P4", "P5"), "john@example.com");
 
         when(flightRepository.findByFlightNumber("FL001")).thenReturn(Optional.of(sampleFlight));
         when(flightRepository.getStore()).thenReturn(flightStore);
@@ -90,7 +91,7 @@ class BookingServiceTest {
 
     @Test
     void bookFlight_flightNotFound_throwsException() {
-        BookingRequest request = new BookingRequest("FL999", "John Doe", "john@example.com", 1);
+        BookingRequest request = new BookingRequest("FL999", List.of("John Doe"), "john@example.com");
 
         when(flightRepository.findByFlightNumber("FL999")).thenReturn(Optional.empty());
 
@@ -117,7 +118,7 @@ class BookingServiceTest {
             final int idx = i;
             executor.submit(() -> {
                 try {
-                    BookingRequest request = new BookingRequest("FL001", "Passenger " + idx, "p" + idx + "@example.com", 1);
+                    BookingRequest request = new BookingRequest("FL001", List.of("Passenger " + idx), "p" + idx + "@example.com");
                     bookingService.bookFlight(request);
                     successCount.incrementAndGet();
                 } catch (InsufficientSeatsException e) {

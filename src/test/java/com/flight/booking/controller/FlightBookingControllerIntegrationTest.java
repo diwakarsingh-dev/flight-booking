@@ -10,6 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -29,15 +32,16 @@ class FlightBookingControllerIntegrationTest {
 
     @Test
     void createBooking_validRequest_returns201() throws Exception {
-        BookingRequest request = new BookingRequest("FL001", "Jane Doe", "jane@example.com", 2);
+        BookingRequest request = new BookingRequest("FL001", List.of("Jane Doe", "John Doe"), "jane@example.com");
 
-        mockMvc.perform(post("/api/bookings")
+        mockMvc.perform(post("/flight/booking")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andExpect(jsonPath("$.flightNumber").value("FL001"))
-                .andExpect(jsonPath("$.passengerName").value("Jane Doe"))
+                .andExpect(jsonPath("$.passengerNames[0]").value("Jane Doe"))
+                .andExpect(jsonPath("$.passengerNames[1]").value("John Doe"))
                 .andExpect(jsonPath("$.numberOfSeats").value(2))
                 .andExpect(jsonPath("$.status").value("Booking confirmed"))
                 .andExpect(jsonPath("$.bookingId").isNotEmpty());
@@ -47,7 +51,7 @@ class FlightBookingControllerIntegrationTest {
     void createBooking_missingFields_returns400() throws Exception {
         String invalidJson = "{}";
 
-        mockMvc.perform(post("/api/bookings")
+        mockMvc.perform(post("/flight/booking")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(invalidJson))
                 .andExpect(status().isBadRequest())
@@ -56,9 +60,9 @@ class FlightBookingControllerIntegrationTest {
 
     @Test
     void createBooking_unknownFlight_returns404() throws Exception {
-        BookingRequest request = new BookingRequest("FL999", "Jane Doe", "jane@example.com", 1);
+        BookingRequest request = new BookingRequest("FL999", List.of("Jane Doe"), "jane@example.com");
 
-        mockMvc.perform(post("/api/bookings")
+        mockMvc.perform(post("/flight/booking")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())
@@ -69,9 +73,13 @@ class FlightBookingControllerIntegrationTest {
     void createBooking_seatsExhausted_returns409() throws Exception {
         int totalSeats = flightRepository.findByFlightNumber("FL002").orElseThrow().getTotalSeats();
 
-        BookingRequest request = new BookingRequest("FL002", "Jane Doe", "jane@example.com", totalSeats + 1);
+        List<String> passengers = new ArrayList<>();
+        for (int i = 0; i <= totalSeats; i++) {
+            passengers.add("Passenger " + i);
+        }
+        BookingRequest request = new BookingRequest("FL002", passengers, "jane@example.com");
 
-        mockMvc.perform(post("/api/bookings")
+        mockMvc.perform(post("/flight/booking")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())

@@ -1,22 +1,24 @@
 package com.flight.booking.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+
+import java.util.List;
 
 public record BookingRequest(
 
         @NotBlank(message = "Flight number is required")
         String flightNumber,
 
-        @NotBlank(message = "Passenger name is required")
-        String passengerName,
+        @NotEmpty(message = "At least one passenger name is required")
+        List<@NotBlank(message = "Passenger name must not be blank") String> passengerNames,
 
         @NotBlank(message = "Passenger email is required")
         @Email(message = "Invalid email format")
-        String passengerEmail,
-
-        @Min(value = 1, message = "Number of seats must be at least 1")
-        int numberOfSeats
+        String passengerEmail
 ) {
+        public int numberOfSeats() {
+                return passengerNames == null ? 0 : passengerNames.size();
+        }
 }

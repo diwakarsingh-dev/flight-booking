@@ -16,13 +16,13 @@ import java.net.URI;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/bookings")
+@RequestMapping("/flight")
 @RequiredArgsConstructor
 public class FlightBookingController {
 
     private final BookingService bookingService;
 
-    @PostMapping
+    @PostMapping("/booking")
     public ResponseEntity<BookingResponse> createBooking(@Valid @RequestBody BookingRequest request) {
         log.info("Received booking request for flight {}", request.flightNumber());
 
